@@ -1,4 +1,12 @@
-import { Component, ComponentRef, TemplateRef, viewChild, ViewContainerRef } from "@angular/core";
+import {
+  Component,
+  ComponentRef,
+  inputBinding,
+  outputBinding,
+  TemplateRef,
+  viewChild,
+  ViewContainerRef,
+} from "@angular/core";
 import { WeatherContentComponent } from "./widget/weather-content.component";
 import { WidgetComponent } from "./widget/widget.component";
 @Component({
@@ -12,32 +20,53 @@ import { WidgetComponent } from "./widget/widget.component";
     <main id="content">
       <ng-container #container></ng-container>
       <section class="toolbar">
-        <button (click)="createComponent()" class="create">Create Component</button>
-        <button (click)="destroyComponent()" class="destroy">Destroy Component</button>
+        <button (click)="createComponent()" class="create">
+          Create Component
+        </button>
+        <button (click)="destroyComponent()" class="destroy">
+          Destroy Component
+        </button>
       </section>
     </main>
   `,
-    imports: [WeatherContentComponent],
+  imports: [WeatherContentComponent],
 })
 export class AppComponent {
-   vcr = viewChild('container', { read: ViewContainerRef });
-  content = viewChild<TemplateRef<unknown>>('content');
+  vcr = viewChild("container", { read: ViewContainerRef });
+  content = viewChild<TemplateRef<unknown>>("content");
   #componentRef?: ComponentRef<WidgetComponent>;
+  // createComponent() {
+  //   this.vcr()?.clear();
+  //   const contentView = this.vcr()?.createEmbeddedView(this.content()!)
+  //   this.#componentRef = this.vcr()?.createComponent(WidgetComponent, {
+  //     projectableNodes: [
+  //       contentView?.rootNodes!
+  //     ]
+  //   })
+  //   this.#componentRef?.setInput('title', 'Weather');
+  //   this.#componentRef?.setInput('description', 'Currently in Vienna:');
+
+  //   this.#componentRef?.instance.closed.subscribe(
+  //     () => this.#componentRef?.destroy()
+  //   )
+  // }
+
   createComponent() {
     this.vcr()?.clear();
-    const contentView = this.vcr()?.createEmbeddedView(this.content()!)
+    const contentView = this.vcr()?.createEmbeddedView(this.content()!);
     this.#componentRef = this.vcr()?.createComponent(WidgetComponent, {
-      projectableNodes: [
-        contentView?.rootNodes!
-      ]
-    })
-    this.#componentRef?.setInput('title', 'Weather'); 
-    this.#componentRef?.setInput('description', 'Currently in Vienna:');
-
-    this.#componentRef?.instance.closed.subscribe(
-      () => this.#componentRef?.destroy()
-    )
+      bindings: [
+        inputBinding("title", () => "Weather"),
+        inputBinding("description", () => "Currently in India:"),
+        outputBinding("closed", () => {
+          this.#componentRef?.destroy();
+          this.#componentRef = undefined;
+        }),
+      ],
+      projectableNodes: [contentView?.rootNodes!],
+    });
   }
+
   destroyComponent() {
     this.vcr()?.clear();
   }
