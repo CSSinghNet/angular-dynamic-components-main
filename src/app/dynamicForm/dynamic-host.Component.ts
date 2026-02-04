@@ -1,25 +1,14 @@
-import {
-  Component,
-  ComponentRef,
-  effect,
-  inject,
-  inputBinding,
-  outputBinding,
-  signal,
-  TemplateRef,
-  twoWayBinding,
-  viewChild,
-  ViewContainerRef,
-} from "@angular/core";
-import { DynamicFormControlComponent } from "./dynamicForm/dynamic-formControl.Component";
 import { CommonModule, NgClass } from "@angular/common";
+import { Component, inject, ViewContainerRef, signal, inputBinding, twoWayBinding, outputBinding, effect } from "@angular/core";
+import { DynamicFormControlComponent } from "./dynamic-formControl.Component";
 import { FormsModule } from "@angular/forms";
+
 @Component({
-  selector: "app-root",
+  selector: 'app-dynamic-host',
   standalone: true,
+  imports: [CommonModule,FormsModule],
   template: `
-    <h1 class="page-title">Dynamic Components</h1>
-   <div class="container py-5">
+    <div class="container py-5">
       <h2>Angular v20 Dynamic Component Demo</h2>
       <p>Using declarative bindings + two-way + directives</p>
 
@@ -49,10 +38,9 @@ import { FormsModule } from "@angular/forms";
         </div>
       }
     </div>
-  `,
-  imports: [CommonModule,FormsModule],
+  `
 })
-export class AppComponent {
+export class DynamicHostComponent {
   private vcr = inject(ViewContainerRef);
   private componentRef: any = null;
 
@@ -61,7 +49,7 @@ export class AppComponent {
 
   createComponent() {
     // Clean up previous instance if exists
-    this.clear();
+    this.vcr.clear();
 
     this.componentRef = this.vcr.createComponent(DynamicFormControlComponent, {
       bindings: [
